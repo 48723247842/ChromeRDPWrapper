@@ -1,14 +1,18 @@
-from websocket import create_connection
+import time
 import json
 import requests
-import time
 from pprint import pprint
+from websocket import create_connection
 from XDoToolWrapper import XDoToolWrapper
 
 class ChromeRDPWrapper:
 
 	def __init__( self , options={} ):
 		self.options = options
+		if "host" not in self.options:
+			self.options["host"] = "http://127.0.0.1"
+		if "port" not in self.options:
+			self.options["port"] = 9222
 
 	def websocket_send_message( self , address , message ):
 		try:
@@ -32,7 +36,7 @@ class ChromeRDPWrapper:
 
 	def get_tabs( self ):
 		try:
-			tabs = requests.get( "http://127.0.0.1:9222/json" )
+			tabs = requests.get( f"{self.options['host']}:{self.options['port']}/json" )
 			tabs.raise_for_status()
 			tabs = tabs.json()
 			return tabs
@@ -43,7 +47,7 @@ class ChromeRDPWrapper:
 
 	def open_url( self , url ):
 		try:
-			result = requests.get( f"http://127.0.0.1:9222/json/new?{url}" )
+			result = requests.get( f"{self.options['host']}:{self.options['port']}/json/new?{url}" )
 			result.raise_for_status()
 			result = result.json()
 			return result
@@ -54,7 +58,7 @@ class ChromeRDPWrapper:
 
 	def close_tab_id( self , tab_id ):
 		try:
-			result = requests.get( f"http://localhost:9222/json/close/{tab_id}" )
+			result = requests.get( f"{self.options['host']}:{self.options['port']}/json/close/{tab_id}" )
 			result.raise_for_status()
 			result = result.json()
 			return result
