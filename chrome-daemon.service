@@ -1,0 +1,19 @@
+[Unit]
+Description=Keeps Chrome Running
+After=network.target
+
+[Service]
+Restart=always
+RestartSec=3
+User=morphs
+Environment="DISPLAY=:0"
+ExecStart=/usr/bin/google-chrome-stable --password-store=basic \
+--load-extension "/home/morphs/.config/google-chrome/Default/Extensions/dhdgffkkebhmkfjojejmpbldmpobfkfo" \
+--keep-alive-for-test  --remote-debugging-port=9222 \
+--daemon
+ExecReload=/usr/bin/pkill -9 chrome
+ExecStop=/usr/bin/pkill -9 chrome
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
