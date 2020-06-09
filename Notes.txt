@@ -1,0 +1,68 @@
+/usr/bin/google-chrome-stable --password-store=basic \
+--app=https://www.disneyplus.com/video/8b998fae-f7a6-434a-a8c2-79d853247782 \
+--load-extension "/home/morphs/.config/google-chrome/Default/Extensions/dhdgffkkebhmkfjojejmpbldmpobfkfo" \
+--keep-alive-for-test \
+
+/usr/bin/google-chrome-stable --password-store=basic \
+--load-extension "/home/morphs/.config/google-chrome/Default/Extensions/dhdgffkkebhmkfjojejmpbldmpobfkfo" \
+--keep-alive-for-test  --remote-debugging-port=9222 \
+--daemon
+
+curl http://localhost:9222/json
+curl http://localhost:9222/json/new?https%3A%2F%2Fwww.disneyplus.com%2Fvideo%2F8b998fae-f7a6-434a-a8c2-79d853247782
+curl http://localhost:9222/json/new?https%3A%2F%2Fwww.disneyplus.com%2Fvideo%2F8b998fae-f7a6-434a-a8c2-79d853247782
+curl http://localhost:9222/json/close/23E9798FC7A913D022EB31DFF226A515
+
+
+https://chromedevtools.github.io/devtools-protocol/#endpoints
+https://chromedevtools.github.io/devtools-protocol/
+
+
+// https://gist.github.com/umaar/ebc170660f15aa894fa4880f4b76e77d
+
+const devtools = new WebSocket('ws://localhost:9222/devtools/page/69990451-aaab-4ef8-87b1-ea77b8101b2a');
+
+devtools.onmessage = ({data}) => {
+	const {result: {result: {value}}} = JSON.parse(data);
+	console.log('WebSocket Message Received: ', value)
+};
+
+devtools.send(JSON.stringify({
+	id: 1,
+	method: 'Runtime.evaluate',
+	params: {
+		expression: `'The current URL is: ' + location.href`
+	}
+}));
+
+
+1.) Open Page
+	curl http://localhost:9222/json/new?https%3A%2F%2Fwww.disneyplus.com%2Fvideo%2F8b998fae-f7a6-434a-a8c2-79d853247782
+
+2.) Connect to Page's Websocket Address
+	 ~/go/bin/ws ws://localhost:9222/devtools/page/B194831F5AD1BCF0558885816D873352
+
+3.) Enable Runtime API ?
+	{"id":1 ,"method": "Runtime.enable"}
+
+4.) Run Stuff ( we don't need tampermonkey ? )
+	{"id":1,"method": "Runtime.evaluate","params":{"expression":"location.href"}}
+
+5.) Complile Script from String
+	https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#method-compileScript
+
+	{"id":1,"method": "Runtime.compileScript","params":{"persistScript": true, "sourceURL":"http://127.0.0.1:9003/disney_script.js","expression":"!function(){document.querySelector('.btm-media-overlays-container')}();"}}
+
+6.) Run Compiled Script Useing the Returned script id {"id":1,"result":{"scriptId":"61"}}
+
+	{"id":1,"method": "Runtime.runScript","params":{"scriptId":"61"}}
+
+7.) Close Browser , but we want to keep it running ,
+	so need to close all tabs then systemctl's version of chrome keeps running
+	{"id":1,"method": "Browser.close"}
+
+	so just curl http://localhost:9222/json
+
+	iterate through all type: "page"
+	and requests.get( http://localhost:9222/json/close/703DC5B0AA05BED937CA40539267731A  )
+
