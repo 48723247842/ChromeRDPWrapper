@@ -1,6 +1,6 @@
 # Chrome RDP Wrapper
 
-`python3 -m pip install chrome_rdp_wrapper`
+`python3 -m pip install chrome-rdp-wrapper`
 
 ```
 import time
