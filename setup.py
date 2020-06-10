@@ -14,7 +14,7 @@ with pathlib.Path('./chrome_rdp_wrapper/requirements.txt').open() as requirement
 
 setuptools.setup(
 	name="chrome_rdp_wrapper",
-	version="0.0.1",
+	version="0.0.2",
 	author="7435171",
 	author_email="48723247842@protonmail.com",
 	description="Chrome RDP Wrapper",
